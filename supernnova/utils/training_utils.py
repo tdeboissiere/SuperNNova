@@ -13,6 +13,7 @@ plt.switch_backend("agg")
 from ..training import vanilla_rnn
 from ..training import variational_rnn
 from ..training import bayesian_rnn
+from ..training import vanilla_cnn
 
 from . import logging_utils as lu
 
@@ -235,6 +236,8 @@ def get_model(settings, input_size):
         rnn = variational_rnn.VariationalRNN
     elif settings.model == "bayesian":
         rnn = bayesian_rnn.BayesianRNN
+    elif settings.model == "CNN":
+        rnn = vanilla_cnn.CNN
 
     rnn = rnn(input_size, settings)
 
@@ -499,7 +502,11 @@ def get_evaluation_metrics(settings, list_data, model, sample_size=None):
             list_data, batch_idxs, settings
         )
         settings.random_length = random_length
-        output = eval_step(model, packed_tensor, X_tensor.size(1))
+        if settings.model == "CNN":
+            in_tensor = X_tensor.reshape(X_tensor.shape[1],X_tensor.shape[2],X_tensor.shape[0])
+        else:
+            in_tensor = packed_tensor
+        output = eval_step(model, in_tensor, X_tensor.size(1))
 
         if "bayesian" in settings.pytorch_model_name:
             list_kl.append(model.kl.detach().cpu().item())

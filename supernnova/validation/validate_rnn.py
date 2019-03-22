@@ -188,14 +188,18 @@ def get_predictions(settings, model_file=None):
             # Full lightcurve prediction
             #############################
 
-            packed, _, target_tensor, idxs_rev_sort = tu.get_data_batch(
+            packed, X_tensor, target_tensor, idxs_rev_sort = tu.get_data_batch(
                 list_data_test, batch_idxs, settings
             )
+            if settings.model == "CNN":
+                in_tensor = X_tensor.reshape(X_tensor.shape[1],X_tensor.shape[2],X_tensor.shape[0])
+            else:
+                in_tensor = packed
 
             for iter_ in tqdm(range(settings.num_inference_samples), ncols=100):
 
                 arr_preds, arr_target = get_batch_predictions(
-                    rnn, packed, target_tensor
+                    rnn, in_tensor, target_tensor
                 )
 
                 # Rever sorting that occurs in get_batch_predictions
@@ -208,7 +212,7 @@ def get_predictions(settings, model_file=None):
 
             # MFE
             arr_preds, arr_target = get_batch_predictions_MFE(
-                rnn, packed, target_tensor
+                rnn, in_tensor, target_tensor
             )
 
             # Rever sorting that occurs in get_batch_predictions
@@ -236,14 +240,18 @@ def get_predictions(settings, model_file=None):
                 offset_batch_idxs = [batch_idxs[b] for b in inb_idxs]
                 max_lengths = [slice_idxs[b] for b in inb_idxs]
 
-                packed, _, target_tensor, idxs_rev_sort = tu.get_data_batch(
+                packed, X_tensor, target_tensor, idxs_rev_sort = tu.get_data_batch(
                     list_data_test, offset_batch_idxs, settings, max_lengths=max_lengths
                 )
+                if settings.model == "CNN":
+                    in_tensor = X_tensor.reshape(X_tensor.shape[1],X_tensor.shape[2],X_tensor.shape[0])
+                else:
+                    in_tensor = packed
 
                 for iter_ in tqdm(range(settings.num_inference_samples), ncols=100):
 
                     arr_preds, arr_target = get_batch_predictions(
-                        rnn, packed, target_tensor
+                        rnn, in_tensor, target_tensor
                     )
 
                     # Rever sorting that occurs in get_batch_predictions
@@ -262,14 +270,18 @@ def get_predictions(settings, model_file=None):
             #############################
 
             for OOD in ["random", "shuffle", "reverse", "sin"]:
-                packed, _, target_tensor, idxs_rev_sort = tu.get_data_batch(
+                packed, X_tensor, target_tensor, idxs_rev_sort = tu.get_data_batch(
                     list_data_test, batch_idxs, settings, OOD=OOD
                 )
+                if settings.model == "CNN":
+                    in_tensor = X_tensor.reshape(X_tensor.shape[1],X_tensor.shape[2],X_tensor.shape[0])
+                else:
+                    in_tensor = packed
 
                 for iter_ in tqdm(range(settings.num_inference_samples), ncols=100):
 
                     arr_preds, arr_target = get_batch_predictions(
-                        rnn, packed, target_tensor
+                        rnn, in_tensor, target_tensor
                     )
 
                     # Revert sorting that occurs in get_batch_predictions
@@ -279,7 +291,7 @@ def get_predictions(settings, model_file=None):
                     d_pred[f"all_{OOD}"][start_idx:end_idx, iter_] = arr_preds
 
                 arr_preds, arr_target = get_batch_predictions_MFE(
-                    rnn, packed, target_tensor
+                    rnn, in_tensor, target_tensor
                 )
 
                 # Revert sorting that occurs in get_batch_predictions
