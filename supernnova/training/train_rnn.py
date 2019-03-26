@@ -306,15 +306,11 @@ def train(settings):
             packed, feat_tensor, target_tensor, idxs_rev_sort = tu.get_data_batch(
                 list_data_train, batch_idxs, settings
             )
-            if settings.model == "CNN":
-                in_tensor = feat_tensor.reshape(feat_tensor.shape[1],feat_tensor.shape[2],feat_tensor.shape[0])
-            else:
-                in_tensor = packed
             # Train step : forward backward pass
             tu.train_step(
                 settings,
                 rnn,
-                in_tensor,
+                packed,
                 target_tensor,
                 criterion,
                 optimizer,

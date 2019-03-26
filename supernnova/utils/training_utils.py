@@ -502,11 +502,7 @@ def get_evaluation_metrics(settings, list_data, model, sample_size=None):
             list_data, batch_idxs, settings
         )
         settings.random_length = random_length
-        if settings.model == "CNN":
-            in_tensor = X_tensor.reshape(X_tensor.shape[1],X_tensor.shape[2],X_tensor.shape[0])
-        else:
-            in_tensor = packed_tensor
-        output = eval_step(model, in_tensor, X_tensor.size(1))
+        output = eval_step(model, packed_tensor, X_tensor.size(1))
 
         if "bayesian" in settings.pytorch_model_name:
             list_kl.append(model.kl.detach().cpu().item())
@@ -526,7 +522,6 @@ def get_evaluation_metrics(settings, list_data, model, sample_size=None):
         list_target.append(target_numpy)
     targets = np.concatenate(list_target, axis=0)
     preds = np.concatenate(list_pred, axis=0)
-
     # Check outputs size
     assert len(targets.shape) == 1
     assert len(preds.shape) == 2

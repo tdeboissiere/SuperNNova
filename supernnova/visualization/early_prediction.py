@@ -52,14 +52,9 @@ def get_predictions(settings, dict_rnn, X, target, OOD=None):
                 # Apply softmax to obtain a proba
                 pred_proba = nn.functional.softmax(out, dim=-1).data.cpu().numpy()
             else:
-                if settings.model == "CNN":
-                    X_slice = X_slice.reshape(X_slice.shape[1],X_slice.shape[2],X_slice.shape[0])
-                    out  = rnn(X_slice)
-                    pred_proba = nn.functional.softmax(out, dim=-1).data.cpu().numpy()
-                else:
-                    out = rnn(X_slice.expand(new_size))
-                    # Apply softmax to obtain a proba
-                    pred_proba = nn.functional.softmax(out, dim=-1).data.cpu().numpy()
+                out = rnn(X_slice.expand(new_size))
+                # Apply softmax to obtain a proba
+                pred_proba = nn.functional.softmax(out, dim=-1).data.cpu().numpy()
 
             # Add to buffer list
             d_pred[model_type]["prob"].append(pred_proba)
