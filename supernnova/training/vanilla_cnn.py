@@ -45,17 +45,17 @@ class CNN(nn.Module):
             x, lens = torch.nn.utils.rnn.pad_packed_sequence(x)
             # x is (seq_len, batch, hidden size)
             # change to (B,H,L) for CNN
-            x = x.permute(1,2,0)
+            x = x.permute(1,2,0).to(x.device)
             # create the mask
             # using broadcasting
             lens = lens.unsqueeze(1) # shape (B,1)
             tmp = torch.arange(x.size(2)).unsqueeze(0)  # size (1,L)
             mask = tmp.float() < lens.float() # (B,L)
-            mask = mask.unsqueeze(1) # (B,1,L)
+            mask = mask.unsqueeze(1).to(x.device) # (B,1,L)
         else:
             # only permute
-            x = x.permute(1,2,0)
-            mask = torch.ones(x.size(0)).unsqueeze(1).unsqueeze(1)
+            x = x.permute(1,2,0).to(x.device)
+            mask = torch.ones(x.size(0)).unsqueeze(1).unsqueeze(1).to(x.device)
 
         x = F.relu(self.conv1(x))
         x = F.relu(self.conv2(x))
