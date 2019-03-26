@@ -125,6 +125,7 @@ class ExperimentSettings:
         name += f"_{self.batch_size}"
         name += f"_{self.bidirectional}"
         name += f"_{self.rnn_output_option}"
+        name += f"_{self.learning_rate}"
         if "bayesian" in self.model:
             name += (
                 f"_Bayes_{self.pi}_{self.log_sigma1}_{self.log_sigma2}"
