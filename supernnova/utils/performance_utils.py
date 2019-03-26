@@ -157,10 +157,7 @@ def reformat_df(df, key, keep=None, group_bayesian=False):
         df (pandas.DataFrame) (str): with columns [class*, predicted_target]
     """
     # Key will change depending if around max or complete lc
-    if key != "all" and key != "probability":
-        format_key = f"PEAKMJD{key}"
-    else:
-        format_key = key
+    format_key = key
 
     # new dataframe to save
     tmp_df = pd.DataFrame()

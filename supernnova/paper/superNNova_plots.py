@@ -1395,6 +1395,8 @@ def science_plots(settings, onlycnf=False):
 
     # Get extra info from fits (for distance modulus)
     fits = du.load_fitfile(settings)
+    if len(fits)<1:
+        return
     fits = fits[["SNID", "cERR", "mBERR", "x1ERR"]]
 
     # check if files are there

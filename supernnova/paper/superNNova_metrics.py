@@ -308,8 +308,8 @@ def print_contamination(df, sel_criteria, settings, data="saltfit"):
         df_sel[f"str_all_contamination_{sntype}"] = df_sel[key_list].apply(
             lambda x: " \pm ".join(x.map(str)), axis=1
         )
-        key_list = [f"0_contamination_{sntype}_mean", f"0_contamination_{sntype}_std"]
-        df_sel[f"str_0_contamination_{sntype}"] = df_sel[key_list].apply(
+        key_list = [f"PEAKMJD_contamination_{sntype}_mean", f"PEAKMJD_contamination_{sntype}_std"]
+        df_sel[f"str_PEAKMJD_contamination_{sntype}"] = df_sel[key_list].apply(
             lambda x: " \pm ".join(x.map(str)), axis=1
         )
 
@@ -324,6 +324,6 @@ def print_contamination(df, sel_criteria, settings, data="saltfit"):
     keys_to_use = ["model_name_noseed"] + [
         k
         for k in df_sel.keys()
-        if "str_0_contamination_" in k or "0_efficiency_" in k or "0_purity_" in k
+        if "str_PEAKMJD_contamination_" in k or "PEAKMJD_efficiency_" in k or "PEAKMJD_purity_" in k
     ]
     nice_df_print(df_sel, keys=keys_to_use)

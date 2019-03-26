@@ -162,15 +162,12 @@ def get_rnn_performance_metrics_singlemodel(settings, df, host_zspe_list):
     """
 
     # Compute metrics around peak light, and with full lightcurve
-    list_keys = ["-2", "", "+2"] + ["all"]
+    # list_keys = ["-2", "", "+2"] + ["all"]
+    list_keys = ["PEAKMJD-2", "PEAKMJD", "PEAKMJD+2","all"] + [f"epochs{nepochs}" for nepochs in [2,4,6]]
     perf_dic = {}
-    for key in list_keys:
+    for format_key in list_keys:
         # Need to select data (remove NAN) as sometimes, MJD happens too early
         # and MJD+(-2) (for instance) cannot be computed, hence NaN
-        if key != "all":
-            format_key = f"PEAKMJD{key}"
-        else:
-            format_key = key
         selection = df[~np.isnan(df[f"{format_key}_class1"])]
         if "bayesian" or "variational" in settings.pytorch_model_name:
             group_bayesian = True
@@ -179,17 +176,14 @@ def get_rnn_performance_metrics_singlemodel(settings, df, host_zspe_list):
         # general metrics
         # TODO refactor
         reformatted_selection = pu.reformat_df(
-            selection, key, group_bayesian=group_bayesian
+            selection, format_key, group_bayesian=group_bayesian
         )
         accuracy, auc, purity, efficiency, _ = pu.performance_metrics(
             reformatted_selection
         )
         contamination_df = pu.contamination_by_SNTYPE(reformatted_selection, settings)
 
-        if key == "":
-            savekey = "0"
-        else:
-            savekey = key
+        savekey = format_key
         perf_dic[f"{savekey}_accuracy"] = accuracy
         perf_dic[f"{savekey}_auc"] = auc
         perf_dic[f"{savekey}_purity"] = purity
@@ -202,7 +196,7 @@ def get_rnn_performance_metrics_singlemodel(settings, df, host_zspe_list):
         # Reweighted for SNe with zspe
         zspe_df = selection[selection["SNID"].isin(host_zspe_list)]
         if len(zspe_df) > 0:
-            zspe_df = pu.reformat_df(zspe_df, key, group_bayesian=group_bayesian)
+            zspe_df = pu.reformat_df(zspe_df, format_key, group_bayesian=group_bayesian)
             accuracy_zspe, auc_zspe, purity_zspe, efficiency_zspe, _ = pu.performance_metrics(
                 zspe_df
             )

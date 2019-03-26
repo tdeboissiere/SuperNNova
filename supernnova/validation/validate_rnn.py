@@ -151,6 +151,7 @@ def get_predictions(settings, model_file=None):
             "PEAKMJD+2",
         ]
         + [f"all_{OOD}" for OOD in du.OOD_TYPES]
+        + [f"epochs{nepochs}" for nepochs in [2,4,6]]
     }
     for key in ["target", "SNID"]:
         d_pred[key] = np.zeros((num_elem, settings.num_inference_samples)).astype(
@@ -256,6 +257,29 @@ def get_predictions(settings, model_file=None):
                     d_pred[col][start_idx + inb_idxs, iter_] = arr_preds
                     # For oob_idxs, no prediction can be made, fill with nan
                     d_pred[col][start_idx + oob_idxs, iter_] = np.nan
+
+            #############################
+            # Predictions for fixed n epochs
+            #############################
+            for nepochs in [2, 4, 6]:
+
+                max_lengths = [nepochs for i in range(len(batch_idxs))]
+                packed, X_tensor, target_tensor, idxs_rev_sort = tu.get_data_batch(
+                    list_data_test, batch_idxs, settings, max_lengths=max_lengths
+                )
+
+                for iter_ in tqdm(range(settings.num_inference_samples), ncols=100):
+
+                    arr_preds, arr_target = get_batch_predictions(
+                        rnn, packed, target_tensor
+                    )
+
+                    # Rever sorting that occurs in get_batch_predictions
+                    arr_preds = arr_preds[idxs_rev_sort]
+
+                    d_pred[f"epochs{nepochs}"][start_idx + inb_idxs, iter_] = arr_preds
+                    # For oob_idxs, no prediction can be made, fill with nan
+                    d_pred[f"epochs{nepochs}"][start_idx + oob_idxs, iter_] = np.nan
 
             #############################
             # OOD predictions
