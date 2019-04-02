@@ -19,7 +19,7 @@ Code is far from optimized
 Best performing algorithms in SuperNNova
 """
 Base = (
-    "CNN_CLF_2_R_zpho_photometry_DF_1.0_N_global_lstm_32x2_0.05_128_True_mean_0.001"
+    "CNN_CLF_2_R_None_photometry_DF_1.0_N_global_lstm_32x2_0.05_128_True_mean_0.001"
 )
 list_models = [Base]
 list_models_rnn = [Base]
