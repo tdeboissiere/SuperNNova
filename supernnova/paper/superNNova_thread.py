@@ -19,7 +19,7 @@ Code is far from optimized
 Best performing algorithms in SuperNNova
 """
 Base = (
-    "DES_vanilla_CLF_2_R_None_photometry_DF_1.0_N_global_lstm_32x2_0.05_128_True_mean_C"
+    "CNN_CLF_2_R_zpho_photometry_DF_1.0_N_global_lstm_32x2_0.05_128_True_mean_0.001"
 )
 Var = "DES_variational_CLF_2_R_None_photometry_DF_1.0_N_global_lstm_32x2_0.01_128_True_mean_C_WD_1e-07"
 BBB = "DES_bayesian_CLF_2_R_None_photometry_DF_1.0_N_global_lstm_32x2_0.05_128_True_mean_Bayes_0.75_-1.0_-7.0_4.0_3.0_-0.5_-0.1_3.0_2.0"  # _KL_0.1"
@@ -74,8 +74,8 @@ def SuperNNova_stats_and_plots_thread(df, settings, plots=True, debug=False):
     # Baseline experiments
     baseline(df, settings, plots, debug)
     # Bayesian experiments
-    df_delta, df_delta_ood = sm.get_delta_metrics(df, settings)
-    bayesian(df, df_delta, df_delta_ood, settings, plots, debug)
+    # df_delta, df_delta_ood = sm.get_delta_metrics(df, settings)
+    # bayesian(df, df_delta, df_delta_ood, settings, plots, debug)
     # Towards statistical analyses/cosmology
     towards_cosmo(df, df_delta, df_delta_ood, settings, plots, debug)
 
@@ -327,159 +327,6 @@ def bayesian(df, df_delta, df_delta_ood, settings, plots, debug):
 
 
 def towards_cosmo(df, df_delta, df_delta_ood, settings, plots, debug):
-    """
-    Towards cosmology
-    """
-    # 1. Calibration
-    print(lu.str_to_bluestr("Calibration"))
-    df_sel = df.copy()
-    df_sel = df_sel.round(4)
-    # rf can't be done with photometry
-    df_sel = df_sel[
-        (
-            df_sel["model_name_noseed"].isin(
-                [l.replace("photometry", "saltfit") for l in list_models]
-            )
-        )
-        & (df_sel["source_data"] == "saltfit")
-    ]
-    print("saltfit")
-    if not debug:
-        sm.nice_df_print(
-            df_sel,
-            keys=[
-                "model_name_noseed",
-                "calibration_dispersion_mean",
-                "calibration_dispersion_std",
-            ],
-        )
-    # without rf
-    print("photometry")
-    df_sel = df.copy()
-    df_sel = df_sel[
-        (df_sel["model_name_noseed"].isin([Base, Var, BBB]))
-        & (df_sel["source_data"] == "photometry")
-    ]
-    if not debug:
-        sm.nice_df_print(
-            df_sel,
-            keys=[
-                "model_name_noseed",
-                "calibration_dispersion_mean",
-                "calibration_dispersion_std",
-            ],
-        )
-    # Calibration vs. training set size
-    # using salt
-    print(lu.str_to_bluestr("Calibration vs. data set size"))
-    print("Baseline")
-    sel_criteria = Base_salt.split("DF_1.0")
-    if debug:
-        print(sel_criteria)
-    else:
-        sm.get_metric_ranges(
-            df, sel_criteria, metric="calibration_dispersion", round_output=5
-        )
-    # Calibration vs. dataset nature
-    sel_criteria = [
-        "DES_vanilla_CLF_2_R_None_saltfit_DF_1.0_N_global_lstm_32x2_0.05_128_True_mean_C"
-    ]
-    if debug:
-        print(sel_criteria)
-    else:
-        sm.get_metric_ranges(
-            df, sel_criteria, metric="calibration_dispersion", round_output=5
-        )
-    # Calibration figure
-    if plots:
-        print(lu.str_to_yellowstr("Plotting reliability diagram (Figure 6)"))
-        tmp_pred_files = settings.prediction_files
-        settings.prediction_files = [
-            settings.models_dir
-            + "/"
-            + model.strip("DES_")
-            .replace("CLF_2", "S_0_CLF_2")
-            .replace("photometry", "saltfit")
-            + "/"
-            + model.replace("DES_", "PRED_DES_")
-            .replace("CLF_2", "S_0_CLF_2")
-            .replace("photometry", "saltfit")
-            + ".pickle"
-            for model in [RF, Base, Var, BBB]
-        ]
-        if debug:
-            print(settings.prediction_files)
-        else:
-            sp.plot_calibration(settings)
-        settings.prediction_files = tmp_pred_files
-
-    # 2. Representativeness
-    print(lu.str_to_bluestr("Representativeness"))
-    for model in [Base, Var, BBB]:
-        m_left = model.replace("photometry", "saltfit")
-        m_right = model.replace("DF_1.0", "DF_0.43")
-        print(m_left, m_right)
-        df_sel = df_delta[
-            (df_delta["model_name_left"] == m_left)
-            & (df_delta["model_name_right"] == m_right)
-        ]
-        if not debug:
-            sm.nice_df_print(
-                df_sel,
-                keys=[
-                    "all_accuracy_mean_delta",
-                    "mean_all_class0_std_dev_mean_delta",
-                    "all_entropy_mean_delta",
-                ],
-            )
-
-    # 3. OOD
-    print(lu.str_to_bluestr("Out-of-distribution light-curves"))
-    # OOD type assignement figure
-    if plots:
-        print(lu.str_to_yellowstr("Plotting OOD classification percentages (Figure 8)"))
-        if not debug:
-            sp.create_OOD_classification_plots(df, list_models_rnn, settings)
-    # Get entropy
-    print("binary")
-    df_sel = df_delta_ood[df_delta_ood["model_name_noseed"].isin(list_models_rnn)]
-    if not debug:
-        sm.nice_df_print(df_sel)
-    print("ternary")
-    list_models_sel = [l.replace("CLF_2", "CLF_3") for l in list_models_rnn]
-    df_sel = df_delta_ood[df_delta_ood["model_name_noseed"].isin(list_models_sel)]
-    if not debug:
-        sm.nice_df_print(df_sel)
-    print("seven-way")
-    list_models_sel = [l.replace("CLF_2", "CLF_7") for l in list_models_rnn]
-    df_sel = df_delta_ood[df_delta_ood["model_name_noseed"].isin(list_models_sel)]
-    if not debug:
-        sm.nice_df_print(df_sel)
-    if plots:
-        print(
-            lu.str_to_yellowstr(
-                "Plotting OOD candidates with seven-way classification (Figure 9)"
-            )
-        )
-        model_file = (
-            f"{settings.models_dir}/"
-            + Var.replace("DES_variational_", "variational_S_0_").replace(
-                "CLF_2", "CLF_7"
-            )
-            + "/"
-            + Var.replace("DES_variational_", "variational_S_0_").replace(
-                "CLF_2", "CLF_7"
-            )
-            + ".pt"
-        )
-        if os.path.exists(model_file):
-            if debug:
-                print(model_file)
-            else:
-                model_settings = conf.get_settings_from_dump(model_file)
-                early_prediction.make_early_prediction(model_settings, nb_lcs=20)
-        else:
-            print(lu.str_to_redstr(f"File not found {model_file}"))
 
     # 4. Cosmology
     print(lu.str_to_bluestr("SNe Ia for cosmology"))
