@@ -77,7 +77,7 @@ def SuperNNova_stats_and_plots_thread(df, settings, plots=True, debug=False):
     # df_delta, df_delta_ood = sm.get_delta_metrics(df, settings)
     # bayesian(df, df_delta, df_delta_ood, settings, plots, debug)
     # Towards statistical analyses/cosmology
-    towards_cosmo(df, df_delta, df_delta_ood, settings, plots, debug)
+    # towards_cosmo(df, df_delta, df_delta_ood, settings, plots, debug)
 
 
 def baseline(df, settings, plots, debug):
