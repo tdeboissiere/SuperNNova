@@ -1,0 +1,24 @@
+MUTANT CNN
+saltfit
+
+DF 1.0
+- default (~2% below RNN):
+   -2_accuracy  all_accuracy  all_auc
+0        82.71         94.44   0.9888
+- cyclic
+   -2_accuracy  all_accuracy  all_auc
+0        79.74         90.89   0.9711
+
+Cyclic is not good for CNN
+
+
+DF 0.2
+best performing with 93.32 all accuracy
+	CNN_CLF_2_R_None_saltfit_DF_0.2_N_global_lstm_32x2_0.05_64_False_mean_0.001
+	CNN_CLF_2_R_None_saltfit_DF_0.2_N_global_lstm_32x2_0.05_64_True_mean_0.001
+	CNN_CLF_2_R_None_saltfit_DF_0.2_N_global_lstm_64x2_0.05_128_False_mean_0.001
+	CNN_CLF_2_R_None_saltfit_DF_0.2_N_global_lstm_64x2_0.05_128_True_mean_0.001
+summary: hidden 32 vs. 64 and batch size 64 vs 128 and bidirectional or not the same.
+will use bidirectional because of early classifications any how.
+
+launching with photometry DF 1.0 , hidden 32, 0.05, 128, True, mean, 0.001
