@@ -91,7 +91,7 @@ def baseline(df, settings, plots, debug):
             if debug:
                 print(model_file)
             else:
-                model_settings = conf.get_settings_from_dump(model_file)
+                model_settings = conf.get_settings_from_dump(settings,model_file)
                 early_prediction.make_early_prediction(
                     model_settings, nb_lcs=20, do_gifs=True
                 )
