@@ -100,6 +100,24 @@ def run_baseline_hp(dump_dir, debug, seed):
         )
         run_cmd(cmd, debug, seed)
 
+def run_performance(dump_dir, debug, seed):
+    """Performance and plots
+    """
+
+    lu.print_green(f"SEED {seed}: PERFORMANCE")
+
+    # Make sure all PRED files have accompanying METRICS file
+    list_predictions = (Path(dump_dir) / "models").glob("**/*PRED*.pickle")
+    prediction_files_str = " ".join(list(map(str, list_predictions)))
+
+    cmd = (
+        f"python run.py --metrics --prediction_files {prediction_files_str} --dump_dir {dump_dir} "
+    )
+    run_cmd(cmd, debug, seed)
+
+    # Aggregate all metrics
+    cmd = f"python -W ignore run.py --performance --dump_dir {dump_dir} "
+    run_cmd(cmd, debug, seed)
 
 if __name__ == "__main__":
 
@@ -133,3 +151,5 @@ if __name__ == "__main__":
     for seed in list_seeds:
         # run_baseline_hp(args.dump_dir, args.debug, seed)
         run_baseline_best(args.dump_dir, args.debug, seed)
+    # seed is really not needed
+    run_performance(args.dump_dir, args.debug, seed)

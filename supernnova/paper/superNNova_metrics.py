@@ -225,22 +225,19 @@ def create_accuracy_latex_tables(df, settings):
         "accuracies_biclass.tex": {
             "list_criteria": [
                 [
-                    "vanilla",
                     "_CLF_2",
                     "saltfit",
-                    "_DF_1.0_N_global_lstm_32x2_0.05_128_True_mean_C",
+                    "DF_1.0_N_global_lstm_32x2_0.05_128_True_mean_0.001",
                 ],
                 [
-                    "vanilla",
                     "_CLF_2",
                     "photometry",
                     "_DF_0.43_N_global_lstm_32x2_0.05_128_True_mean_C",
                 ],
                 [
-                    "vanilla",
                     "_CLF_2",
                     "photometry",
-                    "_DF_1.0_N_global_lstm_32x2_0.05_128_True_mean_C",
+                    "DF_1.0_N_global_lstm_32x2_0.05_128_True_mean_0.001",
                 ],
             ],
             "list_title": [
@@ -252,16 +249,14 @@ def create_accuracy_latex_tables(df, settings):
         "accuracies_multiclass.tex": {
             "list_criteria": [
                 [
-                    "vanilla",
                     "_CLF_3",
                     "photometry",
-                    "_DF_1.0_N_global_lstm_32x2_0.05_128_True_mean_C",
+                    "DF_1.0_N_global_lstm_32x2_0.05_128_True_mean_0.001",
                 ],
                 [
-                    "vanilla",
                     "_CLF_7",
                     "photometry",
-                    "_DF_1.0_N_global_lstm_32x2_0.05_128_True_mean_C",
+                    "DF_1.0_N_global_lstm_32x2_0.05_128_True_mean_0.001",
                 ],
             ],
             "list_title": ["Ternary classification", "Seven-way classification"],
