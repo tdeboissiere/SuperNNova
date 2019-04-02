@@ -140,6 +140,7 @@ def get_metrics_singlemodel(settings, prediction_file=None, model_type="rnn"):
 
     df_metrics["model_name"] = model_name
     df_metrics["source_data"] = source_data
+
     df_metrics.to_pickle(metrics_file)
 
     lu.print_green("Finished getting metrics ")
@@ -162,7 +163,6 @@ def get_rnn_performance_metrics_singlemodel(settings, df, host_zspe_list):
     """
 
     # Compute metrics around peak light, and with full lightcurve
-    # list_keys = ["-2", "", "+2"] + ["all"]
     list_keys = ["PEAKMJD-2", "PEAKMJD", "PEAKMJD+2","all"] + [f"epochs{nepochs}" for nepochs in [2,4,6]]
     perf_dic = {}
     for format_key in list_keys:

@@ -277,9 +277,7 @@ def get_predictions(settings, model_file=None):
                     # Rever sorting that occurs in get_batch_predictions
                     arr_preds = arr_preds[idxs_rev_sort]
 
-                    d_pred[f"epochs{nepochs}"][start_idx + inb_idxs, iter_] = arr_preds
-                    # For oob_idxs, no prediction can be made, fill with nan
-                    d_pred[f"epochs{nepochs}"][start_idx + oob_idxs, iter_] = np.nan
+                    d_pred[f"epochs{nepochs}"][start_idx:end_idx, iter_] = arr_preds
 
             #############################
             # OOD predictions
@@ -429,7 +427,7 @@ def get_predictions_for_speed_benchmark(settings):
 
     settings.random_length = False
 
-    if "vanilla" in settings.pytorch_model_name:
+    if "vanilla" in settings.pytorch_model_name or "CNN" in settings.pytorch_model_name:
         settings.num_inference_samples = 1
 
     # Load the data

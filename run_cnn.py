@@ -9,7 +9,7 @@ from pathlib import Path
 from itertools import product
 from supernnova.utils import logging_utils as lu
 
-LIST_SEED = [0]#, 100, 1000, 55, 30496]
+LIST_SEED = [0, 100, 1000, 55, 30496]
 
 def run_cmd(cmd, debug, seed):
     """Run command
@@ -22,18 +22,14 @@ def run_cmd(cmd, debug, seed):
         cmd += " --use_cuda "
 
     if debug is True:
-        # Run for 1 epoch only
-        # cmd += "--cyclic_phases 1 1 1 "
         cmd += "--nb_epoch 1 "
 
 
     subprocess.check_call(shlex.split(cmd))
 
 
-def run_CNN(dump_dir, debug, seed):
-    """Baseline/Random Forest Accuracy vs. number of supernovae
-        Default configurations used when not specified
-        e.g. source_data(saltfit),modelrnn(vanilla),norm(global)
+def run_baseline_best(dump_dir, debug, seed):
+    """CNN best
     """
 
     lu.print_green(f"SEED {seed}: TRAINING")
@@ -42,7 +38,7 @@ def run_CNN(dump_dir, debug, seed):
     # Train baseline models on SALT #
     #################################
     list_redshift = [None, "zpho", "zspe"]
-    list_source_data = ["saltfit"]#,"photometry"]
+    list_source_data = ["photometry"]
 
     # Train RNN models
     for (source_data,redshift) in product(list_source_data,list_redshift):
@@ -51,30 +47,15 @@ def run_CNN(dump_dir, debug, seed):
             f"--source_data {source_data} "
             f"--dump_dir {dump_dir} "
             f"--model CNN "
+            f"--batch_size 128 "
+            f"--bidirectional True "
+            f"--random_length True "
+            f"--hidden_dim 32 "
+            f"--learning_rate 0.001 "
         )
         if redshift is not None:
             cmd += f" --redshift {redshift} "
         run_cmd(cmd, debug, seed)
-
-
-    # #######################################
-    # # Train baseline models on COMPLETE   #
-    # # goal: multiclass                    #
-    # #######################################
-
-    # list_nb_classes = [2, 7]
-    # for (redshift, nb_classes) in product(list_redshift, list_nb_classes):
-    #     cmd = (
-    #         f"python -W ignore run.py --train_rnn "
-    #         f"--nb_classes {nb_classes} "
-    #         f"--dump_dir {dump_dir} "
-    #         f"--source_data photometry "
-    #         f"--model CNN "
-    #     )
-    #     if redshift is not None:
-    #         cmd += f" --redshift {redshift} "
-    #     run_cmd(cmd, debug, seed)
-
 
 def run_baseline_hp(dump_dir, debug, seed):
 
@@ -110,7 +91,6 @@ def run_baseline_hp(dump_dir, debug, seed):
             f"python -W ignore run.py --train_rnn "
             f"--model CNN "
             f"--dump_dir {dump_dir} "
-            f"--cyclic "
             f"--data_fraction 0.2 "
             f"--batch_size {batch_size} "
             f"--bidirectional {bidirectional} "
@@ -151,5 +131,5 @@ if __name__ == "__main__":
     list_seeds = args.seeds[:2] if args.debug else args.seeds
 
     for seed in list_seeds:
-        # run_CNN(args.dump_dir, args.debug, seed)
-        run_baseline_hp(args.dump_dir, args.debug, seed)
+        # run_baseline_hp(args.dump_dir, args.debug, seed)
+        run_baseline_best(args.dump_dir, args.debug, seed)
