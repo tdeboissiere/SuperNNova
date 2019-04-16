@@ -1,6 +1,11 @@
 
 ![Logo](docs/SuperNNova.png)
 
+### WARNING: 
+### This repository has been moved!
+the maintained repository is now: [supernnova/SuperNNova](https://https://github.com/supernnova/SuperNNova)
+
+
 ### Read the documentation
 For the main branch:
 [https://supernnova.readthedocs.io](https://supernnova.readthedocs.io/en/latest/)
