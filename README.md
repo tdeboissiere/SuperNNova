@@ -3,7 +3,7 @@
 
 ### WARNING: 
 ### This repository has been moved!
-the maintained repository is now: [supernnova/SuperNNova](https://https://github.com/supernnova/SuperNNova)
+the maintained repository is now: [supernnova/SuperNNova](https://github.com/supernnova/SuperNNova)
 
 
 ### Read the documentation
